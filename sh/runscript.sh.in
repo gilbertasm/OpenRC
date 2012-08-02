@@ -205,28 +205,33 @@ fi
 [ -n "${rc_ulimit:-$RC_ULIMIT}" ] && ulimit ${rc_ulimit:-$RC_ULIMIT}
 
 # Load our script
-sourcex "$RC_SERVICE"
+lsbh=$(lsb.pl "$RC_SERVICE")
+if [ -n "${lsbh}" ]; then
+	eval "${lsbh}"
+else
+	sourcex "$RC_SERVICE"
 
-for _d in $required_dirs; do
-	if [ ! -d $_d ]; then
-		eerror "$RC_SVCNAME: \`$_d' is not a directory"
-		exit 1
+	for _d in $required_dirs; do
+		if [ ! -d $_d ]; then
+			eerror "$RC_SVCNAME: \`$_d' is not a directory"
+			exit 1
+		fi
+	done
+	unset _d
+
+	for _f in $required_files; do
+		if [ ! -r $_f ]; then
+			eerror "$RC_SVCNAME: \`$_f' is not readable"
+			exit 1
+		fi
+	done
+	unset _f
+
+	if [ -n "$opts" ]; then
+			ewarn "Use of the opts variable is deprecated and will be"
+			ewarn "removed in the future."
+			ewarn "Please use extra_commands, extra_started_commands or extra_stopped_commands."
 	fi
-done
-unset _d
-
-for _f in $required_files; do
-	if [ ! -r $_f ]; then
-		eerror "$RC_SVCNAME: \`$_f' is not readable"
-		exit 1
-	fi
-done
-unset _f
-
-if [ -n "$opts" ]; then
-		ewarn "Use of the opts variable is deprecated and will be"
-		ewarn "removed in the future."
-		ewarn "Please use extra_commands, extra_started_commands or extra_stopped_commands."
 fi
 
 while [ -n "$1" ]; do
@@ -240,7 +245,10 @@ while [ -n "$1" ]; do
 		_depend
 		cd /
 		continue
+	elif [ -n "${lsbh}" ]; then
+		. "${RC_SERVICE}"
 	fi
+	
 	# See if we have the required function and run it
 	for _cmd in describe start stop status ${extra_commands:-$opts} \
 		$extra_started_commands $extra_stopped_commands

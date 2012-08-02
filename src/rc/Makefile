@@ -1,5 +1,5 @@
 PROG=		rc
-SRCS=		checkpath.c fstabinfo.c mountinfo.c start-stop-daemon.c \
+SRCS=		checkpath.c fstabinfo.c mountinfo.c \
 		rc-applets.c rc-depend.c rc-logger.c \
 		rc-misc.c rc-plugin.c rc-service.c rc-status.c rc-update.c \
 		runscript.c rc.c swclock.c
@@ -11,7 +11,7 @@ SBINDIR=	${PREFIX}/sbin
 LINKDIR=	${LIBEXECDIR}
 
 BINLINKS=	rc-status
-SBINLINKS=	rc-service rc-update runscript start-stop-daemon
+SBINLINKS=	rc-service rc-update runscript
 RC_BINLINKS=	einfon einfo ewarnn ewarn eerrorn eerror ebegin eend ewend \
 		eindent eoutdent esyslog eval_ecolors ewaitfile \
 		veinfo vewarn vebegin veend vewend veindent veoutdent \

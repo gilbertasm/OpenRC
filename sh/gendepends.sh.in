@@ -81,10 +81,14 @@ do
 
 		[ -e @SYSCONFDIR@/rc.conf ] && . @SYSCONFDIR@/rc.conf
 
-		if . "$_dir/$RC_SVCNAME"; then
-			echo "$RC_SVCNAME" >&3
-			_depend
+		lsbh=$(lsb.pl "$RC_SERVICE")
+		if [ -n "${lsbh}" ]; then
+			eval "${lsbh}"
+		else
+			. "$_dir/$RC_SVCNAME"
 		fi
+		echo "$RC_SVCNAME" >&3
+		_depend
 		)
 	done
 done
