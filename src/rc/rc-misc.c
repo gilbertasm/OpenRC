@@ -251,12 +251,13 @@ svc_unlock(const char *applet, int fd)
 pid_t
 exec_service(const char *service, const char *arg)
 {
-	char *file, sfd[32];
+	char *file, sfd[32], bsvc[32];
 	int fd;
 	pid_t pid = -1;
 	sigset_t full;
 	sigset_t old;
 	struct sigaction sa;
+	FILE *fsvc;
 
 	fd = svc_lock(basename_c(service));
 	if (fd == -1)
@@ -291,10 +292,18 @@ exec_service(const char *service, const char *arg)
 		/* Unmask signals */
 		sigprocmask(SIG_SETMASK, &old, NULL);
 
-		/* Safe to run now */
-		execl(file, file, "--lockfd", sfd, arg, (char *) NULL);
-		fprintf(stderr, "unable to exec `%s': %s\n",
-		    file, strerror(errno));
+		/* Safe to run now, to support scripts without runscript shebang
+		   we need to make a check first. */
+		fsvc = fopen(file,"r");
+		fgets(bsvc, sizeof(bsvc), fsvc);
+		if (strstr(bsvc, "runscript")) {
+			execl(file, file, "--lockfd", sfd, arg, (char *) NULL);
+			fprintf(stderr, "unable to exec `%s': %s\n",
+			    file, strerror(errno));
+		} else {
+			execl(file, file, arg, (char *) NULL);
+		}
+
 		svc_unlock(basename_c(service), fd);
 		_exit(EXIT_FAILURE);
 	}
