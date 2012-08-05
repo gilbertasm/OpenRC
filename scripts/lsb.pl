@@ -12,7 +12,10 @@ my %lsb2orc = ('$remote_fs' => 'netmount',
 	       'mountdevsubfs' => 'devfs',
 	       '$syslog' => 'logger',
 	       '$time' => 'clock',
-	       '$all' => '*');
+	       '$all' => '*',
+	       'nfs-common' => 'rpc.statd',
+	       '$network' => 'net',
+	       '$portmap' => 'rpcbind');
 
 my %vsrv;
 open(VSERV, "</etc/insserv.conf") || die "error: unable to read /etc/insserv.conf";
@@ -65,6 +68,7 @@ if ($lsbinfo{found}) {
 		my @value;
 		foreach $v (split(/ /, $lsbinfo{$key})) {
 		    push(@value, $lsb2orc{$vsrv{$v}}) if($vsrv{$v});
+		    push(@value, $lsb2orc{$v}) if ($v);
 		    push(@value, $v) if ($v ne $name);
 		}
 		if (@value) {
