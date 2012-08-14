@@ -15,6 +15,7 @@ my %lsb2orc = ('$remote_fs' => 'netmount',
 	       '$all' => '*',
 	       'nfs-common' => 'rpc.statd',
 	       '$network' => 'net',
+	       'mountkernfs' => 'procfs',
 	       '$portmap' => 'rpcbind');
 
 my %vsrv;

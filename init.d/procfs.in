@@ -6,7 +6,7 @@ description="Mounts misc filesystems in /proc."
 
 depend()
 {
-	use modules devfs
+	use modules sysfs
 	need localmount
 	keyword -openvz -vserver -lxc
 }
