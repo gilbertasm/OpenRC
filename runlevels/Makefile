@@ -10,6 +10,12 @@ BOOTDIR=	${LEVELDIR}/boot
 DEFAULTDIR=	${LEVELDIR}/default
 SHUTDOWNDIR=	${LEVELDIR}/shutdown
 
+ifeq (${MKNET},)
+BOOT+= network staticroute
+endif
+
+INITDIR=	../init.d
+
 MK=		../mk
 include ${MK}/sys.mk
 include ${MK}/os.mk
@@ -19,19 +25,25 @@ BOOT-${OS}=
 SHUTDOWN-${OS}=
 SYSINIT-${OS}=
 
+ifeq (${MKNET},oldnet)
+BOOT-FreeBSD+= net.lo0
+BOOT-Linux+= net.lo
+BOOT-NetBSD+= net.lo0
+endif
+
 BOOT-BSD=	hostid newsyslog savecore syslogd swap-blk
 
 # Generic BSD stuff
-BOOT-FreeBSD=	hostid net.lo0 newsyslog savecore syslogd
+BOOT-FreeBSD+=	hostid newsyslog savecore syslogd
 # FreeBSD specific stuff
 BOOT-FreeBSD+=	adjkerntz dumpon syscons
 
-BOOT-Linux=	hwclock keymaps modules mtab net.lo procfs termencoding
+BOOT-Linux+=	hwclock keymaps modules mtab procfs termencoding
 SHUTDOWN-Linux=	killprocs mount-ro
 SYSINIT-Linux=	devfs dmesg
 
 # Generic BSD stuff
-BOOT-NetBSD=	hostid net.lo0 newsyslog savecore syslogd
+BOOT-NetBSD+=	hostid newsyslog savecore syslogd
 # NetBSD specific stuff
 BOOT-NetBSD+=	devdb swap-blk ttys wscons
 
