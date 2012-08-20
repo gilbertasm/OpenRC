@@ -247,8 +247,9 @@ while [ -n "$1" ]; do
 		continue
 	elif [ -n "${lsbh}" ]; then
 		. "${RC_SERVICE}"
+		continue
 	fi
-	
+
 	# See if we have the required function and run it
 	for _cmd in describe start stop status ${extra_commands:-$opts} \
 		$extra_started_commands $extra_stopped_commands
